@@ -16,6 +16,8 @@ cd c200-local
 uv sync --locked --group analysis
 ```
 
+Also have a Telnet client and an RTSP player/ONVIF client or NVR ready on your computer. These are separate applications; `uv sync` installs the project's Python dependencies, not those clients. Use the player and ONVIF client to confirm both streams and profiles before changing the camera.
+
 The project pins Python 3.13; uv manages the project environment. Run the host commands from this repository directory. The scripts prompt for passwords rather than accepting them in command arguments.
 
 ## Check the camera and accounts
@@ -44,6 +46,8 @@ The guide labels commands as **host** or **camera**. Host commands run on your c
 | `192.168.1.0/24` | LAN subnet permitted by the example filter |
 
 Replace these examples with your own values. Keep the literal protocol destinations 228.67.43.91/UDP 15947, 239.255.255.250/UDP 3702 and Cloudflare 162.159.200.1/UDP 123 as described in the firewall policy.
+
+The example filter permits replies to clients in the selected LAN subnet. For routed or VPN access, the camera must see the connection as coming from that permitted subnet, for example through a subnet router that performs source NAT. Replies to a remote client address outside it will be dropped. Do the first trial from the same LAN if that routing is uncertain.
 
 For remote access, the experiment used an existing Tailscale subnet router. No Tailscale agent was installed on the camera. A camera cannot necessarily reach a remote computer's file server just because your computer can connect to the camera; the file-transfer example requires that return path.
 

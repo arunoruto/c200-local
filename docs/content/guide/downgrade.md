@@ -99,6 +99,8 @@ Check the private reports for:
 - Normal update state and automatic upgrades still off, using the app or normal API reads.
 - Local RTSP reachability and an authenticated stream, rather than only an open TCP port.
 
+The collector refuses to overwrite an existing output report. For a later verification, choose a new filename such as `private/after-downgrade-check2.json`; keep the original baseline. A nonzero uploader exit status after sending can mean an unknown outcome, so it does not authorize another upload.
+
 The collector reports an exposed-field comparison; that status alone intentionally does not declare a completed downgrade. The same-device running-version/firmware-ID observations supplied the independent confirmation in this project.
 
 ## 6. Continue to persistent Telnet

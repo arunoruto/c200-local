@@ -27,7 +27,7 @@ uci changes
 iptables -S OUTPUT
 ```
 
-Confirm stock 1.1.15 through normal device information, root access and a working Camera Account. Check both RTSP streams and ONVIF before changing anything. Preserve any pre-existing pending UCI changes; do not discard them with a blanket revert. Stop if port 2323 is already occupied or an existing custom OUTPUT chain is attached.
+Confirm stock 1.1.15 through normal device information, root access and a working Camera Account. Use the [service-verification checklist](verify-streams.md) to check both RTSP streams and ONVIF before changing anything. Open the player/client windows and have the three sets of credentials ready before starting the timed trial. Preserve any pre-existing pending UCI changes; do not discard them with a blanket revert. Resolve pending `system` and `firewall` changes before this procedure, or explicitly review and accept them: the later package commits save those changes too. Stop if port 2323 is already occupied or an existing custom OUTPUT chain is attached.
 
 Create private baseline files on the **camera**:
 
@@ -48,10 +48,10 @@ These partition numbers refer to the exact tested layout: mtd3 is the 65,536-byt
 
 ## 2. Adapt the public bootstrap
 
-On the **host**, edit [camera/boot.sh](/downloads/boot.sh):
+On the **host**, edit `camera/boot.sh` **inside the cloned repository**; that is the file served in step 3. The [downloadable copy](/downloads/boot.sh) is the unadapted template. Leave `camera/launch.sh` unchanged.
 
 - Replace every `192.168.1.100` with the fixed address reserved for your camera.
-- If necessary, replace `192.168.1.0/24` with your actual LAN subnet.
+- Replace `192.168.1.0/24` with your actual LAN subnet if it differs. Your management and streaming clients must be reachable through that permitted subnet; see the [routed/VPN access requirement](getting-started.md#use-the-right-machine-and-address).
 - Check that `br-wan` is the interface carrying that address on your matching firmware.
 
 Keep the Live555, ONVIF and DHCP exceptions. Do not change `/bin/login`, remove the account guard, insert a root hash, or disable media encryption. The tested stock boot stores root's hash directly in `/etc/passwd`; the script also supports an enabled shadow-backed account. It rejects empty/locked account hashes and writes neither password file.
@@ -86,7 +86,7 @@ Compare those hashes with the adapted files on the host. Stop the host HTTP serv
 
 ## 4. Test the listener and filter before saving
 
-Keep the original root connection open. On the **camera**, arm an independent three-minute filter/listener rollback:
+Keep the original root connection open throughout the trial. Prepare the checks below first: the three-minute deadline begins when the background rollback starts, not when you log into port 2323. On the **camera**, arm a three-minute filter/listener rollback:
 
 ```sh
 rm -f /tmp/local-access-keep
@@ -153,7 +153,7 @@ Only after the checks pass, cancel rollback by creating the marker on the **came
 touch /tmp/local-access-keep
 ```
 
-If the timer already expired, inspect the rollback log and restore a working baseline before trying again. Do not create the marker merely because the old shell remains connected.
+If any check fails or you cannot finish before the deadline, leave the marker absent and let rollback run. If the timer already expired, inspect the rollback log and restore a working baseline before trying again. A keep marker created after expiry does not reapply the filter or restart the listener. Do not create the marker merely because the old shell remains connected.
 
 ## 5. Configure the saved startup hook
 
@@ -185,7 +185,15 @@ The vendor list may still inherit default DNS names. Those lookups remain blocke
 
 ## 6. Commit and save user configuration
 
-This is the persistence/write phase. Review all pending changes and back up the final script checksums before running it. On this firmware **`uci commit` can invoke the flash saver**; the first commit may already save the whole user-config tree. These are not RAM-only commands.
+This is the persistence/write phase. Review all pending changes. On the **camera**, record the adapted scripts before saving:
+
+```sh
+md5sum /etc/config/local_access/launch.sh /etc/config/local_access/boot.sh > /tmp/local-access-backup/scripts-before.md5
+cat /proc/uptime > /tmp/local-access-backup/uptime-before.txt
+uci changes > /tmp/local-access-backup/uci-pending.txt
+```
+
+Compare `scripts-before.md5` with the adapted host files and transfer these baseline files off-device too. On this firmware **`uci commit` can invoke the flash saver**; the first commit may already save the whole user-config tree. These are not RAM-only commands.
 
 On the **camera**:
 
@@ -198,7 +206,7 @@ dd if=/dev/mtdblock3 of=/tmp/local-access-backup/config-after.bin bs=65536 count
 md5sum /dev/mtdblock3 /tmp/local-access-backup/config-after.bin
 ```
 
-Check each command's exit status; stop on a failure. The commits may save before the explicit saver call, so this is not a claim of exactly one physical write. The only changed partition must be mtd3 user configuration. Account files must remain identical. The physical readback's checksum must equal the device view. Transfer the new evidence/readback off-device too.
+Run the save line first and confirm it succeeds before running the readback/comparison lines. Check each command's exit status; stop on a failure. The `awk` comparison must print only `changed: /dev/mtdblock3`; it does not signal an unexpected change through its exit status. The commits may save before the explicit saver call, so this is not a claim of exactly one physical write. The only changed partition must be mtd3 user configuration. Account files must remain identical. The physical readback's checksum must equal the device view. Transfer the new evidence/readback off-device too.
 
 The original experiment went further: it restored the candidate twice in a device-free file-I/O sandbox and restored the saved physical readback twice to confirm every expected file. Those one-off adapters are not part of this manual guide. Readback size/hash alone does not prove that every file will restore correctly. Do not run `uc_convert -t 0` against the live system as an innocent validation step.
 
@@ -206,7 +214,16 @@ The original experiment went further: it restored the candidate twice in a devic
 
 After the save checks and recovery preparation, issue one normal `reboot` from the existing root connection. Wait for the camera to return; do not repeatedly send reboot or save commands because the network drops.
 
-Verify fresh root/password login on 2323, empty-password refusal, normal local API reads, actual video from **both** RTSP streams and ONVIF capabilities/profiles/stream URIs. Check uptime to confirm the reboot, then check again after at least 180 seconds for the first watchdog scan. Compare saved script/account hashes and the unchanged firmware/ART/factory partitions against the private baseline.
+Verify fresh root/password login on 2323, empty-password refusal, normal local API reads, actual video from **both** RTSP streams and ONVIF capabilities/profiles/stream URIs. Check uptime to confirm the reboot, then check again after at least 180 seconds for the first watchdog scan. The RAM backup directory is gone after reboot. Run these **camera** commands and compare their output with the off-device files you saved:
+
+```sh
+cat /proc/uptime
+md5sum /etc/config/local_access/launch.sh /etc/config/local_access/boot.sh
+md5sum /etc/passwd /etc/shadow
+md5sum /dev/mtdblock0 /dev/mtdblock1 /dev/mtdblock2 /dev/mtdblock3 /dev/mtdblock4 /dev/mtdblock5 /dev/mtdblock6 /dev/mtdblock7 /dev/mtdblock8
+```
+
+Use `scripts-before.md5` for the adapted scripts, `accounts-before.md5` for accounts, and **`flash-after.md5`** for all nine partitions, including the saved configuration. Compared with `flash-before.md5`, only mtd3 should differ. The uptime should show the new boot. Repeat the [service-verification checklist](verify-streams.md) rather than treating a returned Telnet prompt as full acceptance.
 
 Also check:
 

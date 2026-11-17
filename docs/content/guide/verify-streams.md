@@ -4,7 +4,7 @@ description = 'Check both RTSP streams, ONVIF, the local API, the clock and the 
 weight = 40
 +++
 
-After the [persistence procedure](permanent-telnet.md), check with **new connections**. All addresses below are examples. Use your actual fixed camera address.
+Use this checklist before changing the camera, during the RAM trial with the filter attached, and after the [persistence procedure](permanent-telnet.md). Check with **new connections** each time. All addresses below are examples. Use your actual fixed camera address.
 
 ## Connection details
 
@@ -19,9 +19,23 @@ After the [persistence procedure](permanent-telnet.md), check with **new connect
 
 The Camera Account is separate from both the cloud owner account and Linux root. Enter credentials through the client's normal login fields; avoid putting passwords into command arguments or logs.
 
+## Check the listener and local API
+
+Open `telnet 192.168.1.100 2323` after the trial starts and again after reboot. Log in as Linux root with the existing password and run `id`. In a separate connection, confirm an empty password is refused. Keep your original root connection open during the trial.
+
+For a fresh normal API read, run this on the **host** from the repository root, substituting your Camera Account username:
+
+```sh
+uv run --locked python scripts/read_camera_info.py --host 192.168.1.100 --username camera-user --firmware work/downloads/c200v2-1.1.15.bin --output private/service-check.json
+```
+
+Use a new output filename on each run; existing reports are not overwritten. Confirm the same device and expected running build in the private report. An exposed-field match alone is not a complete service check. Before installation, use your existing shell: port 2323 need not exist yet.
+
 ## Check the actual video
 
 Open each RTSP path in your player or NVR, using the existing Camera Account. Confirm that frames keep arriving on both streams after reboot, with the OUTPUT filter attached.
+
+For a comparable baseline, select **RTSP over TCP** in your player/NVR. The experiment verified TCP transport; UDP media transport has not been separately validated.
 
 The final independent probe decoded:
 
@@ -35,6 +49,23 @@ No media was saved in the experiment. These are short probes, not a sustained pe
 {{< callout type="info" >}}
 An open port or `OPTIONS 200` is insufficient. The broken isolated-boot state passed both, then stalled on authenticated DESCRIBE. The exact Live555 multicast exception restored DESCRIBE, SETUP, PLAY and RTP.
 {{< /callout >}}
+
+## Confirm the filter, time and encryption
+
+From the **camera** root shell during the trial and after reboot:
+
+```sh
+iptables -S OUTPUT
+iptables -S TAPO_LOCAL_ONLY
+iptables -nvxL TAPO_LOCAL_ONLY
+date -u
+test -e /tmp/time_sync
+uci -q get cet.media_encrypt.enabled
+```
+
+Confirm the first OUTPUT rule jumps to `TAPO_LOCAL_ONLY`, the exact Live555/ONVIF exceptions and final DROP are present, and the LAN subnet matches your clients. The clock should synchronize and encryption should read `on`. Recheck fresh video/API sessions after at least 180 seconds of uptime. The pre-change baseline may have no custom chain or sync marker; do not change encryption to make the trial pass.
+
+An attached filter and drop counters are the documented camera-side IPv4 check. They do not prove IPv6 isolation or a gap-free boot boundary; those remain unverified.
 
 ## Check ONVIF
 

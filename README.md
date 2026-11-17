@@ -9,7 +9,7 @@ The setup was verified on one V2 camera on 17 November 2026. Original code and d
 ## Follow the guide
 
 1. [Downgrade from 1.3.17 to 1.1.15](docs/content/guide/downgrade.md).
-2. [Initial shell access](docs/content/guide/initial-shell.md) — the maintainer will supply the separate reference.
+2. [Initial shell access](docs/content/guide/initial-shell.md) — links to the external repository and author's blog post.
 3. [Make Telnet permanent](docs/content/guide/permanent-telnet.md).
 4. [Verify both streams, ONVIF and local access](docs/content/guide/verify-streams.md).
 

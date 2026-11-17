@@ -68,7 +68,7 @@ The deployment uses the Pages base URL returned by GitHub, including a repositor
 | `camera/` | Public example-address bootstrap templates |
 | `scripts/` and `tests/` | The uploader, analysis/publication tools and host checks |
 
-Add the maintainer's initial-shell reference in `docs/content/guide/initial-shell.md`. Do not expand that page into another exploit guide as part of persistence work.
+Keep the maintainer-supplied external references in `docs/content/guide/initial-shell.md`. Initial access stays in those references; this project's procedure covers persistence after root access.
 
 Example addresses are deliberately generic. Keep the distinction between a live result on one camera, a host-only fixture and an untested adaptation. A passing compatibility comparison or HTTP acceptance response is not a completed firmware operation.
 

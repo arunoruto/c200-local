@@ -11,7 +11,7 @@ Follow the steps in order. The firmware operation uses normal owner/admin authen
 
 {{< cards cols="3" >}}
   {{< card link="downgrade" title="1. Downgrade" subtitle="Verify the stock 1.1.15 image, upload once, then check the running version." >}}
-  {{< card link="initial-shell" title="2. Initial shell" subtitle="A separate maintainer reference. Obtaining root is outside this guide." >}}
+  {{< card link="initial-shell" title="2. Initial shell" subtitle="External references for initial access. Persistence begins once you have root." >}}
   {{< card link="permanent-telnet" title="3. Permanent Telnet" subtitle="Back up, test, save the startup hook, then reboot and check every local service." >}}
 {{< /cards >}}
 

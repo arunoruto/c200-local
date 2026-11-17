@@ -103,6 +103,6 @@ The collector reports an exposed-field comparison; that status alone intentional
 
 ## 6. Continue to persistent Telnet
 
-[Obtain an authorized root shell using the maintainer's separate reference](initial-shell.md). That topic is outside this guide. Once you have root on the downgraded camera, follow [persistent Telnet with working RTSP and ONVIF](permanent-telnet.md).
+[Obtain an authorized root shell using the linked external references](initial-shell.md). That topic is outside this guide. Once you have root on the downgraded camera, follow [persistent Telnet with working RTSP and ONVIF](permanent-telnet.md).
 
 For the original observed sequence and limitations, see [validation](../reference/validation.md) and [research notes](../reference/how-it-works.md).

@@ -4,7 +4,7 @@ description = 'Get the project, identify the tested hardware and prepare the acc
 weight = 5
 +++
 
-This guide follows a specific path: stock **C200 hardware V2**, from **1.3.17 Build 260112 Rel.58281n(4555)** to **1.1.15 Build 211112 Rel.10589n(4555)**, then persistent authenticated Telnet with local RTSP and ONVIF.
+This guide covers the tested setup: stock **C200 hardware V2**, from **1.3.17 Build 260112 Rel.58281n(4555)** to **1.1.15 Build 211112 Rel.10589n(4555)**, then persistent authenticated Telnet with local RTSP and ONVIF.
 
 ## Get the project
 
@@ -18,7 +18,7 @@ uv sync --locked --group analysis
 
 Also have a Telnet client and an RTSP player/ONVIF client or NVR ready on your computer. These are separate applications; `uv sync` installs the project's Python dependencies, not those clients. Use the player and ONVIF client to confirm both streams and profiles before changing the camera.
 
-The project pins Python 3.13; uv manages the project environment. Run the host commands from this repository directory. The scripts prompt for passwords rather than accepting them in command arguments.
+The project uses Python 3.13, managed by uv. Run host commands from this repository directory. The scripts prompt for passwords so you can keep them out of command arguments.
 
 ## Check the camera and accounts
 
@@ -27,13 +27,13 @@ The project pins Python 3.13; uv manages the project environment. Run the host c
 | Hardware/build | Confirm C200 V2 and the tested source firmware through normal device information |
 | Firmware operation | Normal owner/admin access; a streaming-only login may not have update privileges |
 | RTSP and ONVIF | A working Camera Account, kept separate from the owner login |
-| Persistence | An existing authorized Linux root shell after the downgrade |
-| Network | A known camera address and a fixed DHCP reservation for the eventual listener |
+| Persistence | A Linux root shell on the camera after the downgrade |
+| Network | A known camera address and a fixed DHCP reservation for Telnet |
 | Recovery | Stable power, private off-device backups and a recovery plan |
 
-Do not infer compatibility from the product name alone. Other C200 hardware revisions, OEM variants and firmware builds are not covered by the live result. Matching compatibility fields is a precheck, not a guarantee of boot success.
+Check the hardware revision and build, even if the product name matches. Other C200 revisions, OEM variants and firmware builds have not been tested. Matching compatibility fields is required before uploading, but cannot guarantee that the camera will boot.
 
-Initial shell access is covered only by the [linked external references](initial-shell.md). This project does not reproduce those instructions or claim that every referenced method applies to every build.
+Use the [external shell-access guides](initial-shell.md) to get the root shell. Check their firmware requirements; a method for one build may not work on another.
 
 ## Use the right machine and address
 
@@ -51,18 +51,18 @@ The example filter permits replies to clients in the selected LAN subnet. For ro
 
 For remote access, the experiment used an existing Tailscale subnet router. No Tailscale agent was installed on the camera. A camera cannot necessarily reach a remote computer's file server just because your computer can connect to the camera; the file-transfer example requires that return path.
 
-## Know the write boundaries
+## Know when commands write to flash
 
-The firmware uploader's default invocation checks request construction offline. Its explicit `--attempt` sends the firmware request; acceptance starts the stock updater automatically.
+By default, the firmware uploader checks the image and upload request offline. Adding `--attempt` sends the request to the camera. If accepted, it starts the stock updater automatically.
 
-The persistence trial stages files in the running configuration tree. The later `uci commit` and `uc_convert -t 1` commands are real persistence operations. On this firmware, even ordinary `uci commit` can save flash. Copy backups off-device before crossing that boundary; `/tmp` disappears on reboot.
+The first Telnet trial keeps the new files in RAM. The later `uci commit` and `uc_convert -t 1` commands save configuration to flash. On this firmware, even ordinary `uci commit` can write flash. Copy backups off the camera before saving; `/tmp` disappears on reboot.
 
 No public firmware or device dump is included in the repository. The reference downloader verifies the stock image against its pinned size and SHA-256.
 
 ## Follow the sequence
 
 1. [Downgrade and verify the running version](downgrade.md).
-2. Use the [external initial-shell references](initial-shell.md) for the root prerequisite.
+2. Get a root shell using the [external shell-access guides](initial-shell.md).
 3. [Stage, test and save permanent Telnet](permanent-telnet.md).
 4. [Verify both streams, ONVIF, local API, time and authentication](verify-streams.md).
 

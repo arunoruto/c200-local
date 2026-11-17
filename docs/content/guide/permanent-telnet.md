@@ -4,15 +4,15 @@ description = "Save authenticated Telnet without losing RTSP or ONVIF."
 weight = 30
 +++
 
-Use this after the [stock downgrade](downgrade.md) and after obtaining an [authorized root shell](initial-shell.md). The following manual procedure publishes the configuration-backed method verified on **C200 V2 stock 1.1.15**. It keeps the existing Linux password and normal `/bin/login`, saves startup through user configuration and preserves the local media/discovery traffic needed when blocking the cloud.
+Start after the [stock downgrade](downgrade.md), with a [root shell open on the camera](initial-shell.md). These steps save the Telnet startup scripts in user configuration, using the method tested on **C200 V2 stock 1.1.15**. They keep your existing Linux password and `/bin/login`, and allow the local streaming and discovery traffic needed while the cloud is blocked.
 
-The `camera/` files match the final verified bootstrap except that the device-specific address is replaced with an example. The commands below assemble that setup on a fresh matching system. This public presentation has not been rerun against the already configured camera. Do not apply it over an existing `TAPO_LOCAL_ONLY` installation or a different firmware without reviewing that state.
+The `camera/` files match the tested startup scripts, with an example address in place of the camera's address. These instructions are for matching firmware. The published steps have not been repeated as a fresh camera installation. If you already have `TAPO_LOCAL_ONLY` installed or use different firmware, review your current setup before continuing.
 
-Commands labeled **host** run on your computer. Commands labeled **camera** run inside the existing root shell. Saving configuration writes flash and can lose Wi-Fi access if interrupted. The experiment has private backups but no demonstrated physical recovery procedure.
+Commands labeled **host** run on your computer. Commands labeled **camera** run inside the existing root shell. Saving configuration writes flash. If interrupted, it can leave the camera unreachable over Wi-Fi. Backups were taken during testing, but physical recovery has not been tested.
 
-Know the Linux password that the stock camera will use after reboot. The bootstrap preserves normal authentication; it does not persist a password change made only in RAM by an initial-access method. The tested final baseline used the stock account files/password, and the bootstrap supports both direct-hash and shadow-backed layouts without writing either file.
+Know the Linux password that the stock camera will use after reboot. The startup scripts use normal login authentication. A password change made only in RAM while getting the initial shell will not be saved by these scripts. The tested setup used the stock account files and password. Both direct-hash and shadow-backed accounts are supported without changing either password file.
 
-The stock default `slprealtek` is a [publicly documented firmware reference](https://github.com/nervous-inhuman/tplink-tapo-c200-re#default-root-password-and-u-boot-console), not a private per-device password. Use your actual Linux password if it differs; the Camera Account is separate. This identifies the normal login credential, not a procedure for obtaining the prerequisite shell.
+The shared stock root password is `slprealtek`, as [documented in the original C200 research](https://github.com/nervous-inhuman/tplink-tapo-c200-re#default-root-password-and-u-boot-console). Use your actual Linux password if it differs; the Camera Account is separate.
 
 ## 1. Record the baseline and back up off-device
 
@@ -27,7 +27,9 @@ uci changes
 iptables -S OUTPUT
 ```
 
-Confirm stock 1.1.15 through normal device information, root access and a working Camera Account. Use the [service-verification checklist](verify-streams.md) to check both RTSP streams and ONVIF before changing anything. Open the player/client windows and have the three sets of credentials ready before starting the timed trial. Preserve any pre-existing pending UCI changes; do not discard them with a blanket revert. Resolve pending `system` and `firewall` changes before this procedure, or explicitly review and accept them: the later package commits save those changes too. Stop if port 2323 is already occupied or an existing custom OUTPUT chain is attached.
+Confirm the camera reports stock 1.1.15, your shell has root access, and the Camera Account works. Use the [service checklist](verify-streams.md) to check both RTSP streams and ONVIF before changing anything. Open your player and client windows, and have all three logins ready before starting the timed trial.
+
+Review any pending UCI changes; do not discard them with a blanket revert. If `system` or `firewall` already has pending changes, review them before continuing: the later commits will save those changes too. Stop if port 2323 is already occupied or a custom OUTPUT chain is attached.
 
 Create private baseline files on the **camera**:
 
@@ -42,11 +44,11 @@ tar -czf /tmp/local-access-backup/user-config-before.tar.gz -C /tmp/etc uc_conf
 dd if=/dev/mtdblock3 of=/tmp/local-access-backup/config-before.bin bs=65536 count=1
 ```
 
-These partition numbers refer to the exact tested layout: mtd3 is the 65,536-byte user-config view. Compare your `/proc/mtd` first. Do not infer offsets or assemble a chip image by concatenating views.
+These partition numbers refer to the exact tested layout: mtd3 is the 65,536-byte user-config view. Compare your `/proc/mtd` first. Do not guess offsets or concatenate these partition views into a full flash image.
 
-**Transfer the backup directory to private storage on the host using your existing root/file-transfer connection before continuing.** `/tmp` is lost at reboot. The configuration archive and partition contain private device data; never attach them to GitHub issues. The original experiment additionally saved and independently verified all nine partition readbacks.
+**Transfer the backup directory to private storage on the host using your existing root/file-transfer connection before continuing.** `/tmp` is lost at reboot. The configuration archive and partition contain private device data; never attach them to GitHub issues. The original test also saved and independently checked readbacks of all nine partitions.
 
-## 2. Adapt the public bootstrap
+## 2. Set the camera address in the startup script
 
 On the **host**, edit `camera/boot.sh` **inside the cloned repository**; that is the file served in step 3. The [downloadable copy](/downloads/boot.sh) is the unadapted template. Leave `camera/launch.sh` unchanged.
 
@@ -56,11 +58,11 @@ On the **host**, edit `camera/boot.sh` **inside the cloned repository**; that is
 
 Keep the Live555, ONVIF and DHCP exceptions. Do not change `/bin/login`, remove the account guard, insert a root hash, or disable media encryption. The tested stock boot stores root's hash directly in `/etc/passwd`; the script also supports an enabled shadow-backed account. It rejects empty/locked account hashes and writes neither password file.
 
-The launcher [camera/launch.sh](/downloads/launch.sh) starts the worker asynchronously with redirected descriptors. The worker builds the complete IPv4 filter, waits up to 90 seconds for the fixed address and starts one password-authenticated listener on 2323. It is not a root-acquisition mechanism.
+The launcher [camera/launch.sh](/downloads/launch.sh) starts the worker in the background and redirects its input and output so it does not block firewall startup. The worker builds the IPv4 filter, waits up to 90 seconds for the fixed address, then starts one password-authenticated Telnet listener on 2323. Installing it requires root access.
 
-## 3. Copy the scripts into the RAM configuration tree
+## 3. Copy the scripts to the camera (RAM only)
 
-The HTTP transfer example assumes the camera can reach the host at its example LAN address before isolation is applied. If you work only through a remote subnet router, use the file-transfer method available through your existing root connection instead. Transfer is separate from the saved startup mechanism.
+The HTTP transfer example assumes the camera can reach the host at its example LAN address before isolation is applied. If you work only through a remote subnet router, use the file-transfer method available through your existing root connection instead. Copying the files alone does not save them for the next boot.
 
 For example, serve only the public script directory from the **host**:
 
@@ -106,7 +108,7 @@ sh /tmp/local-access-rollback.sh </dev/null >/tmp/local-access-rollback.log 2>&1
 sh /etc/config/local_access/launch.sh
 ```
 
-The independent background process restores the prior rules and stops the new 2323 listener unless the keep marker is created. It does not undo persistent writes and is not a recovery method after a bad reboot. No commit/save belongs in this trial.
+The background process restores the previous rules and stops the new 2323 listener unless you create the keep marker. It cannot undo flash writes or recover a camera that fails to boot. Do not commit or save configuration during this trial.
 
 Within that interval, open a **new host connection**:
 
@@ -114,7 +116,7 @@ Within that interval, open a **new host connection**:
 telnet 192.168.1.100 2323
 ```
 
-Log in as root with the existing Linux password, run `id`, and explicitly verify that an empty password is refused in a separate connection. Do not confuse the Linux root password with the Camera Account used below.
+Log in as root with the existing Linux password, run `id`, and check that an empty password is refused in a separate connection. Do not confuse the Linux root password with the Camera Account used below.
 
 Then verify all of these while the filter is attached:
 
@@ -126,7 +128,7 @@ Then verify all of these while the filter is attached:
 | ONVIF discovery | UDP 3702 is listening; verify discovery from your LAN client if supported |
 | Local API | Fresh normal authenticated device-information read |
 
-Supply credentials using client login fields, not credential-bearing URLs in process arguments. An open port or RTSP OPTIONS 200 is insufficient: the earlier broken state passed both.
+Enter credentials in the client's login fields. Putting them in a URL can expose them in process arguments. Check actual video: an open port and RTSP OPTIONS 200 both worked during the earlier streaming failure.
 
 On the **camera**, inspect:
 
@@ -157,7 +159,7 @@ If any check fails or you cannot finish before the deadline, leave the marker ab
 
 ## 5. Configure the saved startup hook
 
-On the **camera**, stage the exact vendor firewall hook:
+On the **camera**, set the firewall startup hook exactly as shown:
 
 ```sh
 uci set firewall.ipctrl.enabled=on
@@ -168,11 +170,11 @@ uci set 'firewall.local_telnet.end_ip=203.0.113.254$(sh${IFS}/etc/config/local_a
 uci changes firewall
 ```
 
-Keep the last assignment single-quoted: the substitution must be saved literally for the vendor-generated script, not expanded by the current shell. `203.0.113.254` is a documentation source address, not your camera or loopback. This creates a harmless actual blacklist range while the generated-script interpretation invokes the launcher.
+Keep the last assignment single-quoted: the substitution must be saved literally for the vendor-generated script, not expanded by the current shell. `203.0.113.254` is a documentation source address, not your camera or loopback. The blacklist range contains only that documentation address. When the vendor-generated script runs, the saved command substitution starts the launcher.
 
-The stock `S45firewall` path restores the hook at boot. **Do not restart the complete stock firewall to test it**; that can clear retained isolation. The initial interpretation experiment used scratch UCI and stubbed iptables, not a production restart.
+The stock `S45firewall` startup script runs this hook at boot. **Do not restart the complete stock firewall to test it**; that can remove the isolation rules. The hook was first checked with a temporary UCI configuration and simulated iptables commands, without restarting the camera's firewall.
 
-For the normal NTP service, the tested setup also staged this literal peer:
+The tested setup also used this IP address for the normal NTP service:
 
 ```sh
 uci set system.ntp.server=0.0.0.0
@@ -181,11 +183,11 @@ uci add_list system.ntp.def_server=162.159.200.1
 uci changes system
 ```
 
-The vendor list may still inherit default DNS names. Those lookups remain blocked; the bootstrap's once-per-boot literal-peer client handles the initial real synchronization. This is clock maintenance, not the RTSP fix.
+The vendor list may still include default DNS names, whose lookups remain blocked. The startup script also runs a once-per-boot NTP client using the IP address directly, so the first synchronization does not wait for DNS. This keeps time accurate; it did not fix the RTSP stall.
 
 ## 6. Commit and save user configuration
 
-This is the persistence/write phase. Review all pending changes. On the **camera**, record the adapted scripts before saving:
+The next steps save configuration to flash. Review all pending changes first. On the **camera**, record the adapted scripts before saving:
 
 ```sh
 md5sum /etc/config/local_access/launch.sh /etc/config/local_access/boot.sh > /tmp/local-access-backup/scripts-before.md5
@@ -206,11 +208,11 @@ dd if=/dev/mtdblock3 of=/tmp/local-access-backup/config-after.bin bs=65536 count
 md5sum /dev/mtdblock3 /tmp/local-access-backup/config-after.bin
 ```
 
-Run the save line first and confirm it succeeds before running the readback/comparison lines. Check each command's exit status; stop on a failure. The `awk` comparison must print only `changed: /dev/mtdblock3`; it does not signal an unexpected change through its exit status. The commits may save before the explicit saver call, so this is not a claim of exactly one physical write. The only changed partition must be mtd3 user configuration. Account files must remain identical. The physical readback's checksum must equal the device view. Transfer the new evidence/readback off-device too.
+Run the save line first and confirm it succeeds before running the readback/comparison lines. Check each command's exit status; stop on a failure. The `awk` comparison must print only `changed: /dev/mtdblock3`; it does not signal an unexpected change through its exit status. The commits may write flash before the separate saver call, so these commands can cause more than one physical write. The only changed partition must be mtd3 user configuration. Account files must remain identical. The physical readback's checksum must equal the device view. Copy the new checksums and readback off the camera too.
 
-The original experiment went further: it restored the candidate twice in a device-free file-I/O sandbox and restored the saved physical readback twice to confirm every expected file. Those one-off adapters are not part of this manual guide. Readback size/hash alone does not prove that every file will restore correctly. Do not run `uc_convert -t 0` against the live system as an innocent validation step.
+The original test also restored the proposed configuration twice in an isolated environment using ordinary files instead of a flash device. It then restored the physical readback twice to check every expected file. Those test adapters are not included in this guide. A matching readback size and checksum alone cannot show that every file will restore correctly. Do not run `uc_convert -t 0` on the live camera just to check the backup: it restores configuration.
 
-## 7. Reboot once, then repeat the full acceptance checks
+## 7. Reboot once, then check all local services
 
 After the save checks and recovery preparation, issue one normal `reboot` from the existing root connection. Wait for the camera to return; do not repeatedly send reboot or save commands because the network drops.
 
@@ -223,7 +225,7 @@ md5sum /etc/passwd /etc/shadow
 md5sum /dev/mtdblock0 /dev/mtdblock1 /dev/mtdblock2 /dev/mtdblock3 /dev/mtdblock4 /dev/mtdblock5 /dev/mtdblock6 /dev/mtdblock7 /dev/mtdblock8
 ```
 
-Use `scripts-before.md5` for the adapted scripts, `accounts-before.md5` for accounts, and **`flash-after.md5`** for all nine partitions, including the saved configuration. Compared with `flash-before.md5`, only mtd3 should differ. The uptime should show the new boot. Repeat the [service-verification checklist](verify-streams.md) rather than treating a returned Telnet prompt as full acceptance.
+Use `scripts-before.md5` for the adapted scripts, `accounts-before.md5` for accounts, and **`flash-after.md5`** for all nine partitions, including the saved configuration. Compared with `flash-before.md5`, only mtd3 should differ. The uptime should show the new boot. Repeat the [service checklist](verify-streams.md) to confirm streaming and local control as well as Telnet.
 
 Also check:
 
@@ -235,12 +237,12 @@ test -e /tmp/time_sync
 uci -q get cet.media_encrypt.enabled
 ```
 
-The verified result had accurate time, the sync marker, encryption ON, stock watchdog/cloud processes running behind the filter, 75 decoded frames from each stream over five-second intervals, and a unicast ONVIF ProbeMatch. Neither stopping cloud daemons nor a modified watchdog is required.
+After reboot, the camera had accurate time, the sync marker, and encryption ON. The stock watchdog and cloud processes kept running behind the filter. Each stream decoded 75 frames over a five-second interval, and a unicast ONVIF probe received a ProbeMatch. The setup works with those stock processes and watchdog unchanged.
 
 ## Disable the saved bootstrap if needed
 
-From a working root connection, `touch /etc/config/local_access/disabled` prevents future direct launches. Persist that marker with the normal configuration saver if that is the intended next-boot state. It does not remove a running listener or currently attached chain.
+From a working root connection, `touch /etc/config/local_access/disabled` prevents future direct launches. Save configuration with the normal saver if you want the marker to survive reboot. It does not remove a running listener or currently attached chain.
 
-To remove the startup hook, first restore another working access/policy path, then delete only the `firewall.local_telnet` section and save deliberately. Restore the original IP-control/NTP settings from your private baseline as appropriate; do not blindly turn off somebody else's firewall policy. Removing the hook alone does not restore a blocked network in the current boot. Raw partition restoration and recovery are outside this guide.
+To remove the startup hook, first restore another working access/policy path, then delete only the `firewall.local_telnet` section and save deliberately. Restore the original IP-control and NTP settings from your private baseline where needed, taking care to keep any other firewall policy in place. Removing the hook alone does not restore a blocked network in the current boot. Raw partition restoration and recovery are outside this guide.
 
-The fixed listener address, IPv4-only policy, full firewall reloads, physical power cycling and long-duration media behavior retain the limitations in [validation](../reference/validation.md).
+See [tested results and limits](../reference/validation.md) before relying on this setup through address changes, full firewall reloads, physical power cycles or long streaming sessions. The filter covers IPv4 only.

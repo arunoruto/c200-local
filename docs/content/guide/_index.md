@@ -7,7 +7,7 @@ type = "docs"
 type = "docs"
 +++
 
-Start with [prerequisites and setup](getting-started.md), then follow the steps in order. The firmware operation uses normal owner/admin authentication; the persistence procedure starts with an existing authorized root shell.
+Start with [prerequisites and setup](getting-started.md), then follow the steps in order. The downgrade uses your owner/admin login. To set up permanent Telnet afterward, you need a root shell on the camera.
 
 {{< cards cols="3" >}}
   {{< card link="downgrade" title="1. Downgrade" subtitle="Verify the stock 1.1.15 image, upload once, then check the running version." >}}
@@ -22,7 +22,7 @@ Start with [prerequisites and setup](getting-started.md), then follow the steps 
 - Have the normal owner/admin login and a working third-party Camera Account ready. The Linux root password is separate.
 - Keep stable power, private off-device backups and a recovery plan. The upload and configuration save both write flash.
 
-The resulting configuration was verified after a normal reboot on one unit. The public portable uploader and example-address bootstrap have host tests; they are not a claim of another live installation. See [verified results and limits](../reference/validation.md).
+This setup worked after a normal reboot on one camera. The uploader and startup scripts in this repository have also been tested on a computer, but the published steps have not been repeated as a fresh camera installation. See [verified results and limits](../reference/validation.md).
 
 ## After installation
 

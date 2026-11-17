@@ -4,19 +4,19 @@ description = 'Identify the failing stage without blindly repeating firmware wri
 weight = 50
 +++
 
-Start with the stage that failed. A successful TCP connection, HTTP upload response or RTSP OPTIONS response establishes less than a successful authenticated session and video after boot.
+Start with the step that failed. An open TCP port, an accepted upload or an RTSP OPTIONS response only confirms part of the process. Check the running firmware, login and actual video before calling it successful.
 
 ## Firmware upload disconnects or times out
 
-Do not automatically resubmit. The stock handler stops services before receiving the whole image, and the updater can close management connections. The public uploader intentionally sends once and never retries a firmware POST.
+Do not automatically resubmit. The stock handler stops services before receiving the whole image, and the updater can close management connections. The uploader sends once and never retries a firmware POST.
 
-Honor the returned wait interval. When management returns, collect fresh device information and compare the same-device running version with the private baseline. HTTP200 with `error_code:0` means accepted, not completed. See [the upload and timeout record](downgrade.md#why-the-timeout-matters).
+Wait for the full interval returned by the camera. When management returns, collect fresh device information and compare the same-device running version with the private baseline. HTTP200 with `error_code:0` means accepted, not completed. See [the upload and timeout record](downgrade.md#why-the-timeout-matters).
 
-In the experiment a 15-second timeout disconnected; a separately initiated request with 120 seconds was accepted. Both socket timeouts in the public uploader are 120 seconds. A new timeout is still ambiguous, not permission to retry blindly.
+The first test disconnected with a 15-second timeout. A later, separately started request with 120 seconds was accepted. Both socket timeouts in this uploader are 120 seconds. If another request times out, check the camera before considering a retry.
 
 ## Owner login fails after downgrade
 
-Try the existing Camera Account for the normal post-boot local reads described in the guide. The previous owner login failed in one verification attempt while the Camera Account subsequently confirmed the expected 1.1.15 build on the same unit. A login failure alone did not establish a failed flash and was not a reason to reset the camera.
+Try the existing Camera Account for the normal post-boot local reads described in the guide. In one check after the downgrade, the owner login failed but the Camera Account worked and confirmed the expected 1.1.15 build on the same camera. A failed login alone does not mean the flash failed, so check with the other account before considering a reset.
 
 Keep the owner/admin, Camera Account and Linux root credentials distinct. Do not put any custom password or raw device report into an issue.
 
@@ -43,9 +43,9 @@ Check the following:
 
 The first experimental bootstrap assumed shadow-only root storage and failed after boot. The corrected script accepts either a direct hash in `/etc/passwd` or a shadow-backed account without writing either file. It rejects empty and locked hashes.
 
-A password change made only in RAM by an initial-access method need not survive reboot. The publicly documented stock default is a separate reference, not a saved custom password. See [the account-layout correction](../reference/how-it-works.md#the-account-layout-bug-and-correction).
+A password change made only in RAM by an initial-access method need not survive reboot. The documented stock default and a custom password are different credentials; use the one the camera restores at boot. See [the account-layout correction](../reference/how-it-works.md#the-account-layout-bug-and-correction).
 
-If Linux/network access is gone, another network shell is not a recovery plan. The project does not provide a tested physical recovery procedure. Repeated configuration writes or reboots cannot be assumed to fix that state.
+If Linux or networking no longer starts, you cannot recover through another network shell. Physical recovery has not been tested for this project. Repeating configuration writes or reboots may leave the camera just as unreachable.
 
 ## RTSP OPTIONS works, but video stalls
 
@@ -59,15 +59,15 @@ iptables -S TAPO_LOCAL_ONLY
 iptables -nvxL TAPO_LOCAL_ONLY
 ```
 
-The attached policy must preserve the exact local-address probe:
+The attached filter must allow this exact local-address probe:
 
 ```text
 -d 228.67.43.91 -p udp --sport 15947 --dport 15947 -j RETURN
 ```
 
-The full rule belongs before the DNS/WAN drops, as in the public bootstrap. Its addition restored DESCRIBE/SETUP/PLAY/RTP immediately in the experiment; the probe counter recorded one 39-byte packet. Correcting the clock, restarting media services or toggling the media-encryption setting did not independently solve that stall. Keep encryption on.
+The full rule belongs before the DNS/WAN drops, as in the startup script. Its addition restored DESCRIBE/SETUP/PLAY/RTP immediately in the experiment; the probe counter recorded one 39-byte packet. Correcting the clock, restarting media services or toggling the media-encryption setting did not independently solve that stall. Keep encryption on.
 
-Do not restart the whole stock firewall as a harmless test: it can clear custom isolation. Compare the current rules with the [policy explanation](../reference/how-it-works.md#final-ipv4-egress-policy) and the [persistence procedure](permanent-telnet.md) first.
+Restarting the whole stock firewall can remove the isolation rules. Avoid using a firewall restart to diagnose this problem. Compare the current rules with the [policy explanation](../reference/how-it-works.md#final-ipv4-egress-policy) and the [persistence procedure](permanent-telnet.md) first.
 
 ## ONVIF is not discovered
 
@@ -86,7 +86,7 @@ cat /tmp/tapo-local-access/ntp.log
 iptables -nvxL TAPO_LOCAL_ONLY
 ```
 
-The public bootstrap permits Cloudflare 162.159.200.1 UDP 123 and starts one literal-peer client when the normal sync marker is absent. The vendor peer list can inherit default DNS names even after an override; DNS for those names remains blocked. The literal-peer client bypasses that initial lookup delay, then exits after a real synchronization. Leave the normal stock time service in place.
+The startup script allows Cloudflare 162.159.200.1 UDP 123 and starts one NTP client using that IP address when the normal sync marker is absent. The vendor peer list can still include default DNS names after an override, but those lookups remain blocked. Using the IP address avoids that lookup delay; the extra client exits after synchronization. Leave the stock time service in place.
 
 A corrected clock did not independently fix the RTSP discovery problem. Avoid changing unrelated settings to diagnose it.
 

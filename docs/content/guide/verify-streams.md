@@ -23,7 +23,7 @@ The Camera Account is separate from both the cloud owner account and Linux root.
 
 Open `telnet 192.168.1.100 2323` after the trial starts and again after reboot. Log in as Linux root with the existing password and run `id`. In a separate connection, confirm an empty password is refused. Keep your original root connection open during the trial.
 
-For a fresh normal API read, run this on the **host** from the repository root, substituting your Camera Account username:
+To check the local API with a new connection, run this on the **host** from the repository root. Substitute your Camera Account username:
 
 ```sh
 uv run --locked python scripts/read_camera_info.py --host 192.168.1.100 --username camera-user --firmware work/downloads/c200v2-1.1.15.bin --output private/service-check.json
@@ -35,19 +35,19 @@ Use a new output filename on each run; existing reports are not overwritten. Con
 
 Open each RTSP path in your player or NVR, using the existing Camera Account. Confirm that frames keep arriving on both streams after reboot, with the OUTPUT filter attached.
 
-For a comparable baseline, select **RTSP over TCP** in your player/NVR. The experiment verified TCP transport; UDP media transport has not been separately validated.
+Select **RTSP over TCP** in your player or NVR to match the tested setup. UDP media transport has not been tested separately.
 
-The final independent probe decoded:
+The final decoding test produced:
 
 | Stream | Codec | Resolution | Frames in the five-second probe |
 |---|---|---|---:|
 | stream1 | H.264 | 1920 × 1080 | 75 |
 | stream2 | H.264 | 640 × 360 | 75 |
 
-No media was saved in the experiment. These are short probes, not a sustained performance benchmark.
+No media was saved during testing. These short checks do not show how the streams perform over long sessions.
 
 {{< callout type="info" >}}
-An open port or `OPTIONS 200` is insufficient. The broken isolated-boot state passed both, then stalled on authenticated DESCRIBE. The exact Live555 multicast exception restored DESCRIBE, SETUP, PLAY and RTP.
+An open port or `OPTIONS 200` does not confirm working video. With the cloud blocked, the camera initially passed both checks after boot, then stalled on authenticated DESCRIBE. The Live555 multicast exception restored DESCRIBE, SETUP, PLAY and RTP.
 {{< /callout >}}
 
 ## Confirm the filter, time and encryption
@@ -65,11 +65,11 @@ uci -q get cet.media_encrypt.enabled
 
 Confirm the first OUTPUT rule jumps to `TAPO_LOCAL_ONLY`, the exact Live555/ONVIF exceptions and final DROP are present, and the LAN subnet matches your clients. The clock should synchronize and encryption should read `on`. Recheck fresh video/API sessions after at least 180 seconds of uptime. The pre-change baseline may have no custom chain or sync marker; do not change encryption to make the trial pass.
 
-An attached filter and drop counters are the documented camera-side IPv4 check. They do not prove IPv6 isolation or a gap-free boot boundary; those remain unverified.
+The attached filter and its drop counters show camera-side IPv4 filtering. IPv6 isolation and traffic during early boot have not been verified.
 
 ## Check ONVIF
 
-Add the camera by IP and port **2020** in your ONVIF client/NVR, with the Camera Account. Enumerate both profiles, retrieve their stream URIs, then open those RTSP streams on 554. ONVIF is the control/discovery protocol; video still travels over RTSP.
+Add the camera by IP and port **2020** in your ONVIF client/NVR, with the Camera Account. List both profiles, get their stream URIs, then open those RTSP streams on 554. ONVIF is the control/discovery protocol; video still travels over RTSP.
 
 The tested camera advertised `http://192.168.1.100:2020/onvif/service` with its actual address in place of the example. Authenticated `GetCapabilities`, `GetProfiles` and `GetStreamUri` returned 200 without SOAP faults. A direct unicast WS-Discovery probe also received a ProbeMatch. Multicast discovery across the remote subnet route was not tested.
 
@@ -92,12 +92,12 @@ uci -q get cet.media_encrypt.enabled
 
 The OUTPUT chain should be attached, DNS/other external DROP counters should increase, the clock should be synchronized, and media encryption should remain `on`. The allowed public unicast time source is Cloudflare `162.159.200.1`, UDP 123. The local multicast probe and ONVIF/DHCP exceptions remain present.
 
-Compare account and bootstrap checksums with the private baseline. Explicitly check empty-password refusal in another login. Repeat fresh API/RTP checks beyond 180 seconds uptime to pass the first watchdog scan.
+Compare account and bootstrap checksums with the private baseline. Check that an empty password is refused in another login. Repeat fresh API/RTP checks beyond 180 seconds uptime to pass the first watchdog scan.
 
-Stock watchdog and cloud processes remain running behind the IPv4 filter. The installed solution does not require stopping them or modifying the watchdog.
+Stock watchdog and cloud processes remain running behind the IPv4 filter. You can leave those processes and the watchdog unchanged.
 
 If a check fails, use [troubleshooting](troubleshooting.md) to isolate the stage before repeating a write or restart.
 
 ## What this proves
 
-The final camera passed these bounded checks after a normal reboot. Long streaming, physical power cycling, IPv6 enforcement, upstream startup capture, DHCP address changes, full firewall reloads, audio, recording, PTZ and IR transitions remain unverified. Review the [validation record](../reference/validation.md) and [how it works](../reference/how-it-works.md) before extending the experiment.
+The camera passed these checks after a normal reboot, over the short intervals described above. Long streaming, physical power cycling, IPv6 enforcement, upstream startup capture, DHCP address changes, full firewall reloads, audio, recording, PTZ and IR transitions remain unverified. Review the [validation record](../reference/validation.md) and [how it works](../reference/how-it-works.md) before extending the experiment.

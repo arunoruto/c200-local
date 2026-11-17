@@ -7,7 +7,7 @@ weight = 10
 This is the procedure used on one **C200 hardware 2.0**, from **1.3.17 Build 260112 Rel.58281n(4555)** to **1.1.15 Build 211112 Rel.10589n(4555)**. It uses the normal authenticated firmware-upload endpoint. It does not need an SD card or an existing Linux shell.
 
 {{< callout type="warning" >}}
-The upload is a real firmware write. Use stable power and a recovery plan appropriate to your device. The successful result on this unit does not establish compatibility with another hardware revision, OEM variant or source build. Read the steps before starting; an accepted upload starts flashing automatically.
+The upload is a real firmware write. Use stable power and a recovery plan appropriate to your device. Other hardware revisions, OEM variants and source builds have not been tested. Read the steps before starting; an accepted upload starts flashing automatically.
 {{< /callout >}}
 
 ## 1. Prepare the host and exact stock image
@@ -20,7 +20,7 @@ uv run --locked python scripts/fetch_assets.py --asset c200v2-1.1.15.bin
 uv run --locked python scripts/fetch_assets.py --verify-only --asset c200v2-1.1.15.bin
 ```
 
-This selects only the downgrade image; the other firmware/GPL references are not needed for this procedure. The target is:
+These commands download only the downgrade image. You do not need the other firmware or GPL archives for this procedure. The image is:
 
 ```text
 work/downloads/c200v2-1.1.15.bin
@@ -29,9 +29,9 @@ Size: 8258048 bytes
 SHA-256: 12f60580ed051950d22559478dda9453c4312f5a981f4e38212eefbd377eb83e
 ```
 
-The uploader independently enforces this size/hash. Do not substitute a modified image or a different release. The package itself is downloaded from the public reference URL, not distributed in this repository.
+The uploader also checks this size and SHA-256. Use the unmodified image from this exact release. The downloader fetches it from the public reference URL; the repository does not include firmware.
 
-## 2. Capture a normal owner/admin baseline
+## 2. Record the camera's current state
 
 Replace the example address throughout. Use the normal **owner/admin** login for this operation; a third-party Camera Account that works for RTSP does not necessarily have firmware-update privileges.
 
@@ -39,13 +39,13 @@ Replace the example address throughout. Use the normal **owner/admin** login for
 uv run --locked python scripts/read_camera_info.py --host 192.168.1.100 --username admin --firmware work/downloads/c200v2-1.1.15.bin --output private/before-downgrade.json
 ```
 
-The password is prompted, not passed in arguments. Keep the report private. Confirm C200 hardware 2.0, the exact source build above, and `exposed_fields_match` for all five compatibility fields. In the Tapo app, turn automatic firmware upgrades off if they are enabled. The uploader checks that the normal update state is idle and automatic upgrades are off; it does not silently change those settings.
+Enter the password at the prompt and keep the report private. Confirm C200 hardware 2.0, the exact source build above, and `exposed_fields_match` for all five compatibility fields. In the Tapo app, turn automatic firmware upgrades off if they are enabled. The uploader requires an idle update state and automatic upgrades to be off. It leaves those settings unchanged.
 
 Have a working third-party **Camera Account** ready for post-downgrade verification before uploading. That login is separate from the owner/admin credentials used for the firmware operation.
 
-A field match is a necessary precheck in this procedure, not a guarantee of flash/boot success. The original research also checked signatures and package layout offline; the general metadata inspector does not perform those signature checks.
+All compatibility fields must match before you continue, but a match cannot guarantee a successful flash or boot. The original investigation also checked signatures and package layout offline. The metadata inspector does not check signatures.
 
-## 3. Check request construction offline
+## 3. Check the image and upload request offline
 
 ```sh
 uv run --locked python scripts/downgrade.py --firmware work/downloads/c200v2-1.1.15.bin
@@ -55,13 +55,13 @@ Without `--attempt`, this command opens no camera connection. It verifies the pi
 
 ## 4. Submit one upload
 
-This command is the write boundary:
+The next command sends the firmware and can start flashing:
 
 ```sh
 uv run --locked python scripts/downgrade.py --host 192.168.1.100 --username admin --baseline private/before-downgrade.json --firmware work/downloads/c200v2-1.1.15.bin --attempt
 ```
 
-The public uploader is adapted from the successful one-off client. It removes private paths and the fixed device address, prompts for the normal password and checks the same baseline identity, source build, compatibility fields, update state and automatic-upgrade state immediately before sending. The portable adaptation has host-side tests; it has not been used for another live downgrade.
+The uploader is based on the client used for the successful downgrade, with private paths and the fixed camera address removed. It prompts for your password, then checks the device identity against your baseline, source build, compatibility fields, update state and automatic-upgrade setting immediately before sending. This version has been tested on a computer, but has not been used for another camera downgrade.
 
 The authenticated request is:
 
@@ -79,13 +79,13 @@ The session and TLS compatibility come from the pinned PyTapo transport. Tokens/
 
 The stock HTTP handler stops services and makes memory available **before** receiving the full body. The first attempt in this project disconnected with a 15-second timeout; the camera later still reported 1.3.17. A separately initiated second attempt using 120 seconds returned HTTP 200, `error_code:0`, `wait_time:125`, then the camera booted 1.1.15.
 
-A disconnect is ambiguous. **Do not immediately rerun the upload.** Wait for the updater, check reachability and use normal read-only version/status queries before deciding what happened. HTTP acceptance is also not proof of a completed downgrade. The uploader deliberately leaves `downgrade_confirmed:false` in its journal until independent post-boot verification is performed.
+A disconnect is ambiguous. **Do not immediately rerun the upload.** Wait for the updater, check reachability and use normal read-only version/status queries before deciding what happened. HTTP acceptance is also not proof of a completed downgrade. The uploader leaves `downgrade_confirmed:false` in its journal. Confirm the running firmware separately after boot; the uploader does not update that field for you.
 
 ## 5. Wait and verify the running firmware
 
-Honor the returned wait interval; the tested response requested 125 seconds. Management and RTSP can disappear while the updater stops services and reboots. Do not interrupt power or initiate another update during that interval.
+Wait for the full interval returned by the camera; the tested response requested 125 seconds. Management and RTSP can disappear while the updater stops services and reboots. Do not interrupt power or initiate another update during that interval.
 
-After services return, use an existing **Camera Account** for normal local reads. In this experiment the previous owner-login verification failed after downgrade, while the existing Camera Account succeeded. That was not treated as proof of a failed flash or as a reason to reset/reflash.
+After services return, use an existing **Camera Account** for normal local reads. In this experiment the previous owner-login verification failed after downgrade, while the existing Camera Account succeeded. A failed owner login alone was not a reason to reset or flash again.
 
 ```sh
 uv run --locked python scripts/read_camera_info.py --host 192.168.1.100 --username camera-user --firmware work/downloads/c200v2-1.1.15.bin --output private/after-downgrade.json
@@ -99,12 +99,12 @@ Check the private reports for:
 - Normal update state and automatic upgrades still off, using the app or normal API reads.
 - Local RTSP reachability and an authenticated stream, rather than only an open TCP port.
 
-The collector refuses to overwrite an existing output report. For a later verification, choose a new filename such as `private/after-downgrade-check2.json`; keep the original baseline. A nonzero uploader exit status after sending can mean an unknown outcome, so it does not authorize another upload.
+The collector refuses to overwrite an existing output report. For a later verification, choose a new filename such as `private/after-downgrade-check2.json`; keep the original baseline. If the uploader exits with an error after sending, the outcome may still be unknown. Check the running firmware before considering another upload.
 
-The collector reports an exposed-field comparison; that status alone intentionally does not declare a completed downgrade. The same-device running-version/firmware-ID observations supplied the independent confirmation in this project.
+The compatibility comparison alone cannot confirm the downgrade. In this test, confirmation came from the running version and firmware ID read from the same camera after boot.
 
 ## 6. Continue to persistent Telnet
 
-[Obtain an authorized root shell using the linked external references](initial-shell.md). That topic is outside this guide. Once you have root on the downgraded camera, follow [persistent Telnet with working RTSP and ONVIF](permanent-telnet.md).
+[Get a root shell using the external guides](initial-shell.md), then follow [permanent Telnet with working RTSP and ONVIF](permanent-telnet.md).
 
-For the original observed sequence and limitations, see [validation](../reference/validation.md) and [research notes](../reference/how-it-works.md).
+See the [test results](../reference/validation.md) and [technical explanation](../reference/how-it-works.md) for the original downgrade and its limits.

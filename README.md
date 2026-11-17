@@ -11,13 +11,13 @@ The setup was verified on one V2 camera on 17 November 2026. Original code and d
 Start with [prerequisites and setup](docs/content/guide/getting-started.md).
 
 1. [Downgrade from 1.3.17 to 1.1.15](docs/content/guide/downgrade.md).
-2. [Initial shell access](docs/content/guide/initial-shell.md) — links to the external repository and author's blog post.
+2. [Get a root shell](docs/content/guide/initial-shell.md) using the external guide and author's blog post.
 3. [Make Telnet permanent](docs/content/guide/permanent-telnet.md).
 4. [Verify both streams, ONVIF and local access](docs/content/guide/verify-streams.md).
 
 For common failures, see [troubleshooting](docs/content/guide/troubleshooting.md).
 
-The full documentation lives in **docs/** as a Hugo site using **Hextra**. [Technical reference](docs/content/reference/how-it-works.md), [verified results and limits](docs/content/reference/validation.md), and [source credits](docs/content/reference/sources.md) distinguish live camera results from tested public adaptations.
+The documentation is in **docs/** and uses Hugo with the **Hextra** theme. Read [how it works](docs/content/reference/how-it-works.md), [what was tested](docs/content/reference/validation.md), and the [source credits](docs/content/reference/sources.md) for the background and results. The guides explain which steps were tested on the camera and which were tested only on a computer.
 
 ## Preview the documentation
 
@@ -49,13 +49,13 @@ See the [privacy review](docs/content/reference/privacy.md): shared firmware def
 
 ## Tools and tests
 
-The repository retains the explicit authenticated uploader, public bootstrap templates, read-only metadata/network tools and offline firmware inspector. Use **uv** with the pinned Python environment:
+The repository includes the authenticated firmware uploader, startup scripts, read-only device and network tools, and an offline firmware inspector. Use **uv** to run the tests and source checks in the pinned Python environment:
 
 ```sh
 uv run --locked python -m unittest discover -s tests -v
 uv run --locked python scripts/build_public_bundle.py
 ```
 
-The uploader sends only with its explicit write flag; the other tests use local fixtures and stubs. Follow the guide's backup, staging and verification order. Ordinary `uci commit` can write flash on the tested firmware.
+The uploader requires its write flag before sending firmware. The tests use local files and simulated services. Follow the guide's backup, trial and verification steps in order. Ordinary `uci commit` can write flash on the tested firmware.
 
 Credentials, device backups, firmware, generated websites and build dependencies are ignored and excluded by the public allowlist. The [third-party notice](NOTICE.md) explains licensing. A normal reboot is verified; physical recovery, long streaming and IPv6 remain unverified.

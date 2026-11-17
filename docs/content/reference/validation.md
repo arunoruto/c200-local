@@ -4,11 +4,11 @@ description = "What was tested on the camera, what the host tests cover, and wha
 weight = 20
 +++
 
-The public result summary contains only selected non-identifying observations. Raw API responses, process snapshots, credentials, device/configuration dumps and full journals remain private. Their absence from the public repository limits independent reproduction of past device-specific observations; the included tools can reproduce the documented read-only analyses on supplied inputs.
+The result summary includes selected observations that do not identify the camera or account. Raw API responses, process snapshots, credentials, device and configuration dumps, and full logs stay private. Without those files, readers cannot independently check every observation from the original camera. The included tools can repeat the documented read-only analyses on files you supply.
 
 ## Observed progression
 
-| Date, UTC | Milestone | Evidence boundary |
+| Date, UTC | Result | What was checked |
 |---|---|---|
 | 2026-11-16 | Stock 1.3.17 package acquired and analyzed; compatibility fields read locally | Original hardware/build, not all C200 revisions |
 | 2026-11-16 | Normal authenticated HTTP downgrade to stock 1.1.15 | Post-boot identity/version/firmware-ID reads confirmed completion |
@@ -20,20 +20,20 @@ The public result summary contains only selected non-identifying observations. R
 | 2026-11-17 07:57 | Corrected Telnet startup survived reboot | Root/password login and filter passed; RTSP DESCRIBE stalled |
 | 2026-11-17 09:06 | Exact Live555 multicast exception restored RTP immediately | Runtime change, no service restart required |
 | 2026-11-17 09:28 | Final startup/configuration save and physical readback passed | Only user-config partition changed |
-| 2026-11-17 09:32 | One requested normal reboot of the final fix | Telnet, API and RTP returned automatically |
+| 2026-11-17 09:32 | One normal reboot with the final fix | Telnet, API and RTP returned automatically |
 | 2026-11-17 09:34 | Both video streams independently decoded | 75 frames per stream over five-second probe intervals |
-| 2026-11-17 09:35 | Fresh root/API/RTP at 205.87 s uptime | Beyond first 180-second watchdog scan; bounded stability |
+| 2026-11-17 09:35 | Fresh root/API/RTP at 205.87 s uptime | Beyond first 180-second watchdog scan; short stability check |
 | 2026-11-17 09:44 | ONVIF capabilities/profiles/URIs and unicast discovery passed | Read-only requests, no physical movement |
 
-## Final persistence acceptance
+## Checks after saving and rebooting
 
-The final candidate was first exercised in a device-free chroot. A bounded file-I/O adapter redirected the stock configuration utility to ordinary files; the sandbox had no physical flash device nodes. Two complete candidate save/restore cycles matched expected files. Direct-hash, shadow-backed, empty and locked account fixtures checked normal authentication guards without altering live accounts.
+The proposed configuration was first tested in an isolated chroot. An adapter redirected the stock configuration utility to ordinary files, with no access to physical flash devices. Two complete save/restore cycles produced the expected files. Separate direct-hash, shadow-backed, empty and locked account fixtures tested the login guards without changing accounts on the camera.
 
-Live staging then checked a fresh normal-password login, empty-password rejection, repeat launch with the same listener PID and local RTP. All physical flash/account hashes stayed unchanged during this stage. This distinction matters because an earlier realistic-looking fixture had missed the stock direct-hash account layout.
+The RAM trial on the camera checked a fresh password login, empty-password rejection, a repeat launch with the same listener PID, and local RTP. Flash and account checksums stayed unchanged. An earlier test fixture had missed the stock direct-hash account layout, so the live account checks were also needed.
 
-The explicit final save used the normal stock utility. Only `/dev/mtdblock3` changed. Its physical 65,536-byte readback restored the expected configuration files twice. Password files matched their pre-save checksums.
+The final configuration was saved with the stock utility. Only `/dev/mtdblock3` changed. Its physical 65,536-byte readback restored the expected configuration files twice. Password files matched their pre-save checksums.
 
-After one requested normal reboot, acceptance required:
+After one normal reboot, the camera passed these checks:
 
 - A lower uptime than before reboot, and fresh authenticated root/API/RTP sessions.
 - Empty-password refusal and unchanged account files.
@@ -41,7 +41,7 @@ After one requested normal reboot, acceptance required:
 - Encryption ON and the exact Live555 rule present.
 - All nine flash hashes matching the verified saved state.
 
-The later bounded stability check repeated root/API/RTP, account/flash invariants, synchronization and encryption state after the first watchdog interval. All passed.
+After the first watchdog interval, fresh root/API/RTP sessions still worked. Account and flash checksums, time synchronization and encryption state also passed again. This was a short stability check.
 
 ## Decoded video and ONVIF
 
@@ -54,14 +54,14 @@ FFprobe used TCP RTSP and bounded timeouts. Credentials were loaded through temp
 
 ONVIF authenticated capabilities/profile/stream-URI requests returned 200 without SOAP faults. Both profiles pointed at the tested RTSP paths. UDP unicast discovery responded. PTZ, events, recording and audio behavior were not exercised.
 
-## Failed hypotheses and corrections retained in the record
+## What did not work
 
 - Correcting the 2021 clock did not independently fix the RTSP stall.
 - Temporary media-encryption OFF did not fix it; ON was restored before save and verified after boot. No code/keys were altered.
 - Encoder/RTSP callbacks and a temporary cloud-process shutdown did not solve it. Stock processes now run behind the filter.
-- A hardware/ISP reload attempt stopped at its duplicate-process guard. No successful full ISP reload is claimed.
-- An uptime reset was observed during earlier media diagnostics without an assistant reboot request; its cause was not established. Persistent Telnet returned. This remains relevant to long-duration validation.
-- Ordinary `uci commit` was incorrectly treated as RAM-only earlier. On this firmware it can invoke the saver; approved NTP commits changed user configuration. Earlier reports' intended-scope labels do not override physical checksum observations.
+- A hardware/ISP reload attempt stopped at its duplicate-process guard, so a full ISP reload was not completed.
+- The uptime reset unexpectedly during earlier media diagnostics. No reboot had been requested as part of those diagnostics, and the cause is unknown. Persistent Telnet returned afterward, but long-running stability still needs testing.
+- Ordinary `uci commit` was initially mistaken for a RAM-only operation. On this firmware it can invoke the flash saver: commits of NTP settings changed the user-configuration partition. Physical checksums confirmed the writes.
 - A successful firmware upload response was not treated as proof of downgrade; subsequent identity/version reads supplied that evidence.
 
 ## Host tools
@@ -71,15 +71,15 @@ uv sync --locked --group analysis
 uv run --locked python -m unittest discover -s tests -v
 ```
 
-Publication preparation run on 2026-11-17: **54 tests passed**, including the localhost integration check, optional pinned-firmware cases, portable uploader checks and public bootstrap fixtures. All five reference assets matched their pinned size/SHA-256, all local Markdown links resolved, and all seven CLI help entry points passed.
+On 2026-11-17, **54 tests passed**, including the localhost integration check, optional pinned-firmware cases, uploader checks and startup-script fixtures. All five reference assets matched their pinned size/SHA-256, all local Markdown links resolved, and all seven CLI help entry points passed.
 
-The suite covers malformed image boundaries, hash mismatches, extraction overwrite refusal, path traversal/symlink handling, TCP classification, selected API reads, secret-free diagnostics and compatibility comparisons. The added tests exercise multipart byte preservation, one-send behavior on disconnect, retry rejection and explicit write-mode prerequisites. Bootstrap fixtures execute the real shell flow with temporary filesystem paths and stubbed firewall/network/listener commands, covering direct/shadow/empty/locked accounts, unchanged account files, repeated launches and media/discovery rules. The localhost integration test skips when binding is prohibited. No test requires contacting a camera.
+The suite covers malformed image boundaries, hash mismatches, extraction overwrite refusal, path traversal/symlink handling, TCP classification, selected API reads, secret-free diagnostics and compatibility comparisons. Uploader tests check that multipart encoding preserves every image byte, a disconnect causes no resend, retries are rejected, and write mode requires its specified inputs. Bootstrap fixtures execute the real shell flow with temporary filesystem paths and stubbed firewall/network/listener commands, covering direct/shadow/empty/locked accounts, unchanged account files, repeated launches and media/discovery rules. The localhost integration test skips when binding is prohibited. No test requires contacting a camera.
 
-Website checks also cover root/subpath hosting, missing assets, exact bootstrap downloads, and rejecting unlisted static inputs before a build. Hugo built and checked 15 HTML pages, including a GitHub Pages-style subpath. Desktop/mobile browser QA passed search, dark mode, navigation, downloads and overflow checks, with no page errors, failed requests or external browser requests.
+Website checks also cover root/subpath hosting, missing assets, exact bootstrap downloads, and rejecting unlisted static inputs before a build. Hugo built and checked 15 HTML pages, including a GitHub Pages-style subpath. Desktop and mobile browser checks passed search, dark mode, navigation, downloads and page-width checks. There were no page errors, failed requests or external browser requests.
 
 The CI/privacy checks distinguish the documented stock default from custom credentials, reject forced tracked files outside the public list, and scan rendered output and public JSON for account/unit fields. The GitHub Actions workflow also passed `actionlint` syntax/expression validation. See the [privacy review](privacy.md) for the classification and limits.
 
-The public uploader is adapted from the successful one-off uploader. The bootstrap differs from the final installed bytes only in its example LAN address. These public adaptations have offline/host tests, not a second live downgrade/install claim. See the [downgrade](../guide/downgrade.md) and [persistence](../guide/permanent-telnet.md) procedures for write boundaries.
+The repository's uploader is adapted from the client used for the successful downgrade. The startup scripts differ from the installed files only in their example LAN address. Both have been tested on a computer, but have not been used for a second camera downgrade or installation. The [downgrade](../guide/downgrade.md) and [permanent Telnet](../guide/permanent-telnet.md) guides mark the steps that write flash.
 
 Firmware-dependent cases skip when the optional exact 1.1.15 image is not at the collector's default location. To enable them after checksum-verified reference download:
 
@@ -90,7 +90,7 @@ cp work/downloads/c200v2-1.1.15.bin firmware/v2-1.1.15/Tapo_C200v2_en_1.1.15_Bui
 uv run --locked python -m unittest discover -s tests -v
 ```
 
-The candidate loader verifies exact length and SHA-256 before using the image. Firmware and generated reports remain ignored. The publication bundle is also checked in isolation, where no private device material or firmware is present.
+The candidate loader verifies exact length and SHA-256 before using the image. Firmware and generated reports remain ignored. The source export is also checked in a separate directory without private device files or firmware.
 
 ## Still unverified
 
@@ -101,4 +101,4 @@ The candidate loader verifies exact length and SHA-256 before using the image. F
 - Physical board/flash/SoC identification, serial access and a tested recovery procedure.
 - A supported custom-firmware build or acceptance of modified firmware.
 
-The current milestones are authenticated shell persistence and functioning local media on one stock-firmware unit. They do not establish every aspect of unattended local-only deployment.
+Authenticated Telnet survives reboot and local streaming works on the tested stock-firmware camera. Longer streaming sessions, physical power cycles and the other items above still need testing before relying on it unattended.

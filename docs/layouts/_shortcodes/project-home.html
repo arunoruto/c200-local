@@ -1,0 +1,32 @@
+<div class="c200-home">
+  <section class="c200-hero" aria-labelledby="project-title">
+    <div>
+      <p class="c200-eyebrow">Tapo C200 · Hardware V2</p>
+      <h1 id="project-title">A local camera,<br><span>from boot to stream.</span></h1>
+      <p class="c200-lead">Downgrade to stock 1.1.15, make Telnet persistent, and keep RTSP and ONVIF working with the cloud blocked.</p>
+      <div class="c200-actions">
+        <a class="c200-primary" href="{{ "guide/downgrade/" | relURL }}">Start with the downgrade <span aria-hidden="true">↗</span></a>
+        <a class="c200-secondary" href="{{ "reference/validation/" | relURL }}">See the verified results</a>
+      </div>
+    </div>
+    <aside class="c200-panel" aria-label="Verified local services">
+      <div class="c200-panel-header"><span>STOCK 1.1.15</span><span class="c200-status"><span class="c200-dot" aria-hidden="true"></span>After reboot</span></div>
+      <div class="c200-service"><span class="c200-port">2323</span><div><strong>Persistent Telnet</strong><small>Normal root / password login</small></div><span class="c200-check" aria-label="Verified">✓</span></div>
+      <div class="c200-service"><span class="c200-port">554</span><div><strong>Both RTSP streams</strong><small>1080p + 360p · H.264 decoded</small></div><span class="c200-check" aria-label="Verified">✓</span></div>
+      <div class="c200-service"><span class="c200-port">2020</span><div><strong>ONVIF</strong><small>Profiles, stream URLs and discovery</small></div><span class="c200-check" aria-label="Verified">✓</span></div>
+      <p class="c200-panel-note">Verified on one V2 camera, 17 November 2026.<br>Media encryption on. Stock password unchanged.</p>
+    </aside>
+  </section>
+  <section aria-labelledby="guide-title">
+    <div class="c200-section-label"><h2 id="guide-title">Three steps. One working setup.</h2><p>Follow the guide in order.</p></div>
+    <div class="c200-steps">
+      <a class="c200-step" href="{{ "guide/downgrade/" | relURL }}"><span class="c200-step-number">01 / FIRMWARE</span><h3>Downgrade to 1.1.15</h3><p>Verify the exact stock image, upload through normal owner authentication, and confirm the version after boot.</p><span class="c200-step-link">Read the procedure →</span></a>
+      <a class="c200-step" href="{{ "guide/initial-shell/" | relURL }}"><span class="c200-step-number">02 / PREREQUISITE</span><h3>Get an existing root shell</h3><p>The maintainer will add the initial-access reference separately. Persistence begins once you have root.</p><span class="c200-step-link">About shell access →</span></a>
+      <a class="c200-step" href="{{ "guide/permanent-telnet/" | relURL }}"><span class="c200-step-number">03 / PERSISTENCE</span><h3>Make local access stick</h3><p>Save the startup hook and the right firewall rules. Reboot once, then check Telnet, RTSP and ONVIF.</p><span class="c200-step-link">Make Telnet permanent →</span></a>
+    </div>
+  </section>
+  <section class="c200-scope" aria-label="Scope and the key discovery">
+    <div><h2>The small rule that keeps video working</h2><p>Live555 needs a local address-discovery probe to initialize RTSP. Blocking it made authenticated DESCRIBE stall after boot. A narrow multicast exception fixed it. <a class="c200-secondary" href="{{ "reference/how-it-works/#the-rtsp-discovery-trap" | relURL }}">Read why</a>.</p></div>
+    <div><h2>A tested result, with clear limits</h2><p>The setup uses saved user configuration and preserves ART and firmware filesystems. A normal reboot is verified; long streaming, physical power cycling and IPv6 remain untested. <a class="c200-secondary" href="{{ "reference/validation/" | relURL }}">Review the evidence</a>.</p></div>
+  </section>
+</div>

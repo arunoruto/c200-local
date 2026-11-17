@@ -1,0 +1,45 @@
+{
+  "checked_on": "2026-11-17",
+  "note": "Reference assets for offline analysis. None is a flash recommendation or a backup of the owner's device.",
+  "assets": [
+    {
+      "file": "camera_slp_realtek_c200.tar.bz2",
+      "url": "https://static.tp-link.com/resources/gpl/camera_slp_realtek_c200.tar.bz2",
+      "sha256": "23ad619a896dc3fe1c038fdd7f54fd946b7def08f1e4c09321220f6eaf92aeff",
+      "size": 159081638,
+      "role": "Historical official GPL source package linked from the C200 V2 support page; content is from 2020, not 1.3.17"
+    },
+    {
+      "file": "c200v2-1.1.19.bin",
+      "upstream_filename": "Tapo_C200v2_en_1.1.19_Build_220627_Rel.33188n__1658233377815.bin",
+      "url": "https://raw.githubusercontent.com/tapo-firmware/Tapo_C200/main/Tapo_C200v2/Tapo_C200v2_en_1.1.19_Build_220627_Rel.33188n__1658233377815.bin",
+      "sha256": "850f940dde96624810b6d56f674a5ded2abd52fe2abdb54e00588013963332ac",
+      "size": 8258048,
+      "role": "Historical C200 V2 stock firmware, analysis only"
+    },
+    {
+      "file": "c200v2-1.3.6.bin",
+      "upstream_filename": "Tapo_C200v2_en_1.3.6_Build_230424_Rel.77311n_up_boot-signed_1682511184943.bin",
+      "url": "https://raw.githubusercontent.com/tapo-firmware/Tapo_C200/main/Tapo_C200v2/Tapo_C200v2_en_1.3.6_Build_230424_Rel.77311n_up_boot-signed_1682511184943.bin",
+      "sha256": "2a1ca6f19df81fdd6f254fe1ca1e995bdba7e29aa6ad9835e09a357b32305c65",
+      "git_blob_sha1": "6f4cd9be75f251472f7ae80b4c45587c92beff32",
+      "size": 8258048,
+      "role": "Historical signed-label C200 V2 stock firmware, plaintext SquashFS, analysis only"
+    },
+    {
+      "file": "c200v2-1.1.15.bin",
+      "upstream_filename": "Tapo_C200v2_en_1.1.15_Build_211112_Rel.10589n__1637888842077.bin",
+      "url": "https://raw.githubusercontent.com/tapo-firmware/Tapo_C200/main/Tapo_C200v2/Tapo_C200v2_en_1.1.15_Build_211112_Rel.10589n__1637888842077.bin",
+      "sha256": "12f60580ed051950d22559478dda9453c4312f5a981f4e38212eefbd377eb83e",
+      "size": 8258048,
+      "role": "Exact unmodified stock image used for the verified V2 downgrade; not a general flash recommendation"
+    },
+    {
+      "file": "Tapo_C200v2_en_1.3.17_Build_260112_Rel.58281n_up_boot-signed_1770802078576.bin",
+      "url": "https://download.tplinkcloud.com/firmware/Tapo_C200v2_en_1.3.17_Build_260112_Rel.58281n_up_boot-signed_1770802078576.bin",
+      "sha256": "b5b545314b9897ce6e3154484ec5f106caf09b576d241bfecc4f56f0e763ec2e",
+      "size": 8258048,
+      "role": "Exact original-build stock reference acquired from the vendor CDN and traced offline"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+baseURL = 'http://localhost:1313/'
+locale = 'en-US'
+title = 'C200 Local'
+theme = 'hextra'
+enableRobotsTXT = true
+disableKinds = ['taxonomy', 'term', 'RSS']
+resourceDir = '../work/site-resources'
+
+[markup.goldmark.renderer]
+unsafe = true
+
+[markup.highlight]
+noClasses = false
+
+[outputs]
+home = ['HTML']
+page = ['HTML', 'markdown']
+section = ['HTML', 'markdown']
+
+[[menu.main]]
+name = 'Guide'
+pageRef = '/guide'
+weight = 10
+
+[[menu.main]]
+name = 'Reference'
+pageRef = '/reference'
+weight = 20
+
+[[menu.main]]
+name = 'Contributing'
+pageRef = '/contributing'
+weight = 30
+
+[[menu.main]]
+name = 'Search'
+weight = 40
+[menu.main.params]
+type = 'search'
+
+[[menu.main]]
+name = 'Theme'
+weight = 50
+[menu.main.params]
+type = 'theme-toggle'
+
+[params]
+description = 'A practical guide to downgrading Tapo C200 V2, making Telnet persistent, and preserving local RTSP and ONVIF with the cloud blocked.'
+externalLinkDecoration = true
+
+[params.navbar]
+displayTitle = true
+displayLogo = true
+width = 'wide'
+[params.navbar.logo]
+path = 'branding/camera.svg'
+width = 30
+height = 30
+
+[params.page]
+width = 'wide'
+[params.page.contextMenu]
+enable = true
+
+[params.theme]
+default = 'system'
+displayToggle = true
+
+[params.search]
+enable = true
+type = 'flexsearch'
+[params.search.flexsearch]
+js = 'vendor/flexsearch.bundle.min.js'
+index = 'content'
+tokenize = 'forward'
+
+[params.footer]
+displayCopyright = false
+displayPoweredBy = true
+width = 'wide'

@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "scope": "One owned Tapo C200 hardware V2; observations from 2026-11-16/17",
+  "camera_contacted_for_publication": false,
+  "firmware": {
+    "previous": "1.3.17 Build 260112 Rel.58281n(4555)",
+    "running": "1.1.15 Build 211112 Rel.10589n(4555)"
+  },
+  "persistence": {
+    "changed_partition_on_final_save": [
+      "/dev/mtdblock3"
+    ],
+    "physical_readback_roundtrips": [
+      true,
+      true
+    ],
+    "requested_reboots_for_final_verification": 1,
+    "telnet_confirmed": true,
+    "rtsp_boot_fix_confirmed": true,
+    "empty_password_rejected": true,
+    "startup_files_match": true,
+    "postboot_all_flash_matches_saved": true
+  },
+  "bounded_stability": {
+    "time_utc": "2026-11-17T09:35:54.493384+00:00",
+    "uptime_seconds": 205.87,
+    "all_flash_matches_saved": true,
+    "accounts_unchanged": true,
+    "time_synchronized": true,
+    "encryption_on": true,
+    "beyond_first_watchdog_scan": true,
+    "uptime_advancing": true,
+    "passed": true
+  },
+  "postboot_video": {
+    "time_utc": "2026-11-17T09:34:47.002642+00:00",
+    "probe_interval_seconds": 5,
+    "streams": {
+      "stream1": {
+        "exit_code": 0,
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "nb_read_frames": "75"
+      },
+      "stream2": {
+        "exit_code": 0,
+        "codec_name": "h264",
+        "width": 640,
+        "height": 360,
+        "nb_read_frames": "75"
+      }
+    },
+    "media_saved": false
+  },
+  "onvif": {
+    "time_utc": "2026-11-17T09:44:46.062403+00:00",
+    "operations": {
+      "GetCapabilities": {
+        "http_status": 200,
+        "response_types": [
+          "GetCapabilitiesResponse"
+        ],
+        "soap_fault": false
+      },
+      "GetProfiles": {
+        "http_status": 200,
+        "response_types": [
+          "GetProfilesResponse"
+        ],
+        "soap_fault": false
+      },
+      "GetStreamUri": {
+        "http_status": 200,
+        "response_types": [
+          "GetStreamUriResponse"
+        ],
+        "soap_fault": false
+      }
+    },
+    "profile_count": 2,
+    "unicast_discovery_response": true,
+    "stream_paths": [
+      "/stream1",
+      "/stream2"
+    ],
+    "control_port": 2020,
+    "discovery_port": 3702
+  },
+  "policy": {
+    "family": "IPv4",
+    "dns_blocked": true,
+    "other_non_lan_egress_dropped": true,
+    "live555_probe": {
+      "destination": "228.67.43.91",
+      "protocol": "UDP",
+      "source_port": 15947,
+      "destination_port": 15947
+    },
+    "public_ntp_exception": {
+      "destination": "162.159.200.1",
+      "protocol": "UDP",
+      "destination_port": 123
+    },
+    "ipv6_verified": false,
+    "upstream_startup_capture_verified": false
+  },
+  "private_evidence": "Raw acceptance reports and device backups are retained privately; only selected fields are published.",
+  "limits": [
+    "Normal reboot, not physical power cycling",
+    "Short decoding probes and bounded uptime, not long-duration reliability",
+    "No tested physical recovery procedure"
+  ]
+}

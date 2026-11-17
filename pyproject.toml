@@ -1,0 +1,18 @@
+[project]
+name = "c200-local"
+version = "0.0.0"
+description = "Stock firmware downgrade and persistent local access for Tapo C200 V2"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "pytapo==3.4.31",
+]
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+analysis = [
+    "dissect-cstruct==4.7",
+    "dissect-squashfs==1.12",
+    "dissect-util==3.24",
+]

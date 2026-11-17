@@ -1,0 +1,27 @@
+{
+  "hugo": {
+    "version": "0.170.0",
+    "linux-amd64": {
+      "url": "https://github.com/gohugoio/hugo/releases/download/v0.170.0/hugo_extended_0.170.0_linux-amd64.tar.gz",
+      "sha256": "0930754ec22ad2dd1a252f8c31a5e57faccc9d15f1c3d381ddafcb96eeb8aef0"
+    },
+    "linux-arm64": {
+      "url": "https://github.com/gohugoio/hugo/releases/download/v0.170.0/hugo_extended_0.170.0_linux-arm64.tar.gz",
+      "sha256": "4ec3acd12ac17dbffb34fa453d3630dc0926a2314c8cd4964a550cfa9a4dbc73"
+    }
+  },
+  "hextra": {
+    "version": "0.13.0",
+    "url": "https://codeload.github.com/imfing/hextra/tar.gz/refs/tags/v0.13.0",
+    "sha256": "603dc5576aa1af84531e303ff376b0bff2213ee0391727a514e0d3bdd26ad006"
+  },
+  "flexsearch": {
+    "version": "0.8.143",
+    "url": "https://cdn.jsdelivr.net/npm/flexsearch@0.8.143/dist/flexsearch.bundle.min.js",
+    "sha256": "433e941a8a573ebb9931fc16fc75266ab6b93f569ac2fb4f3dc66882e0416f4c"
+  },
+  "flexsearch_license": {
+    "url": "https://cdn.jsdelivr.net/npm/flexsearch@0.8.143/LICENSE",
+    "sha256": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6"
+  }
+}

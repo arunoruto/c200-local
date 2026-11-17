@@ -9,9 +9,11 @@ The documentation lives in `docs/content/`. It is the source for the website; th
 
 ## Preview the website
 
-From the repository root:
+Get the source, then run the preview:
 
 ```sh
+git clone https://github.com/arunoruto/c200-local.git
+cd c200-local
 uv sync --locked --group analysis
 uv run --locked python scripts/site.py prepare
 uv run --locked python scripts/site.py serve
@@ -32,19 +34,21 @@ uv run --locked python scripts/site.py check
 
 Output is `docs/public/`. The build checks generated local page/asset links and verifies that the two bootstrap downloads match `camera/`. Downloads contain those public templates and the public reference/allowlist metadata. The raw result summary is [available separately](/results.json).
 
-For a project subpath or your final domain:
+To reproduce the published project URL:
 
 ```sh
-uv run --locked python scripts/site.py build --base-url https://your-host.invalid/c200/
+uv run --locked python scripts/site.py build --base-url https://arunoruto.github.io/c200-local/
 ```
 
-Replace that demonstration URL with your real deployment URL. Keep the trailing slash. The same build can be hosted by any static web server.
+For a fork or another host, substitute its deployment URL and keep the trailing slash. The same build can be hosted by any static web server.
 
 ## GitHub Pages
 
-The repository name is **`c200-local`**, with **C200 Local** as the site title.
+The [public repository](https://github.com/arunoruto/c200-local) and [documentation site](https://arunoruto.github.io/c200-local/) are live. Passing `main` builds deploy automatically through [CI and Pages](https://github.com/arunoruto/c200-local/actions/workflows/docs.yml).
 
-1. Create the GitHub repository and push the **audited public export**, not the working research directory.
+To deploy your own fork:
+
+1. Fork the public repository, or create a repository from the **audited public export**, not the working research directory.
 2. Choose **Settings → Pages → Build and deployment → GitHub Actions**.
 3. Run **CI and Pages** from the Actions tab on `main`. If the first push ran before Pages was enabled, rerun after selecting that setting.
 

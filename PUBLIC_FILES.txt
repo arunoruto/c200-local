@@ -13,8 +13,10 @@ docs/content/_index.md
 docs/content/contributing.md
 docs/content/guide/_index.md
 docs/content/guide/downgrade.md
+docs/content/guide/getting-started.md
 docs/content/guide/initial-shell.md
 docs/content/guide/permanent-telnet.md
+docs/content/guide/troubleshooting.md
 docs/content/guide/verify-streams.md
 docs/content/reference/_index.md
 docs/content/reference/how-it-works.md

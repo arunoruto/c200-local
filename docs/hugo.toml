@@ -44,6 +44,13 @@ weight = 50
 [menu.main.params]
 type = 'theme-toggle'
 
+[[menu.main]]
+name = 'GitHub'
+url = 'https://github.com/arunoruto/c200-local'
+weight = 60
+[menu.main.params]
+icon = 'github'
+
 [params]
 description = 'A practical guide to downgrading Tapo C200 V2, making Telnet persistent, and preserving local RTSP and ONVIF with the cloud blocked.'
 externalLinkDecoration = true

@@ -12,7 +12,7 @@ The upload is a real firmware write. Use stable power and a recovery plan approp
 
 ## 1. Prepare the host and exact stock image
 
-Run from the repository root:
+Complete [prerequisites and setup](getting-started.md) first. Run these host commands from the cloned repository root:
 
 ```sh
 uv sync --locked --group analysis

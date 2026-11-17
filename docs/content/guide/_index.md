@@ -7,7 +7,7 @@ type = "docs"
 type = "docs"
 +++
 
-Follow the steps in order. The firmware operation uses normal owner/admin authentication; the persistence procedure starts with an existing authorized root shell.
+Start with [prerequisites and setup](getting-started.md), then follow the steps in order. The firmware operation uses normal owner/admin authentication; the persistence procedure starts with an existing authorized root shell.
 
 {{< cards cols="3" >}}
   {{< card link="downgrade" title="1. Downgrade" subtitle="Verify the stock 1.1.15 image, upload once, then check the running version." >}}
@@ -26,4 +26,4 @@ The resulting configuration was verified after a normal reboot on one unit. The 
 
 ## After installation
 
-[Verify both streams, ONVIF and the local API](verify-streams.md). An open port or RTSP OPTIONS response alone does not prove working video.
+[Verify both streams, ONVIF and the local API](verify-streams.md). An open port or RTSP OPTIONS response alone does not prove working video. If a check fails, see [troubleshooting](troubleshooting.md).

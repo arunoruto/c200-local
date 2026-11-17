@@ -65,6 +65,8 @@ Compare account and bootstrap checksums with the private baseline. Explicitly ch
 
 Stock watchdog and cloud processes remain running behind the IPv4 filter. The installed solution does not require stopping them or modifying the watchdog.
 
+If a check fails, use [troubleshooting](troubleshooting.md) to isolate the stage before repeating a write or restart.
+
 ## What this proves
 
 The final camera passed these bounded checks after a normal reboot. Long streaming, physical power cycling, IPv6 enforcement, upstream startup capture, DHCP address changes, full firewall reloads, audio, recording, PTZ and IR transitions remain unverified. Review the [validation record](../reference/validation.md) and [how it works](../reference/how-it-works.md) before extending the experiment.

@@ -1,6 +1,6 @@
 # C200 Local
 
-Repository name: **`c200-local`** — stock firmware, local control.
+[Live documentation](https://arunoruto.github.io/c200-local/) · [Repository](https://github.com/arunoruto/c200-local) · [CI and deployment](https://github.com/arunoruto/c200-local/actions/workflows/docs.yml)
 
 Downgrade **Tapo C200 V2** to stock **1.1.15**, make normal Telnet login survive reboot, and preserve **RTSP and ONVIF with the cloud blocked**.
 
@@ -8,10 +8,14 @@ The setup was verified on one V2 camera on 17 November 2026. Original code and d
 
 ## Follow the guide
 
+Start with [prerequisites and setup](docs/content/guide/getting-started.md).
+
 1. [Downgrade from 1.3.17 to 1.1.15](docs/content/guide/downgrade.md).
 2. [Initial shell access](docs/content/guide/initial-shell.md) — links to the external repository and author's blog post.
 3. [Make Telnet permanent](docs/content/guide/permanent-telnet.md).
 4. [Verify both streams, ONVIF and local access](docs/content/guide/verify-streams.md).
+
+For common failures, see [troubleshooting](docs/content/guide/troubleshooting.md).
 
 The full documentation lives in **docs/** as a Hugo site using **Hextra**. [Technical reference](docs/content/reference/how-it-works.md), [verified results and limits](docs/content/reference/validation.md), and [source credits](docs/content/reference/sources.md) distinguish live camera results from tested public adaptations.
 
@@ -39,7 +43,7 @@ The [CI and Pages workflow](.github/workflows/docs.yml) runs on pull requests an
 2. Build Hugo/Hextra, check links, and audit the rendered site.
 3. Deploy **only passing `main` builds** to GitHub Pages. Pull requests never deploy.
 
-Create the GitHub repository as `c200-local`, push the audited public export, then select **Settings → Pages → GitHub Actions** and run **CI and Pages** on `main` if needed. Later pushes deploy automatically. Only the deploy job has Pages/OIDC write permissions; there is no personal access token to configure.
+The public repository and Pages site are live. Passing pushes to `main` deploy automatically. For your own fork, select **Settings → Pages → GitHub Actions**, then run **CI and Pages** on `main` if needed. Only the deploy job has Pages/OIDC write permissions; there is no personal access token to configure.
 
 See the [privacy review](docs/content/reference/privacy.md): shared firmware defaults and model IDs are public; custom credentials and per-device data stay private.
 

@@ -33,7 +33,7 @@ The project uses Python 3.13, managed by uv. Run host commands from this reposit
 
 Check the hardware revision and build, even if the product name matches. Other C200 revisions, OEM variants and firmware builds have not been tested. Matching compatibility fields is required before uploading, but cannot guarantee that the camera will boot.
 
-Use the [external shell-access guides](initial-shell.md) to get the root shell. Check their firmware requirements; a method for one build may not work on another.
+Use the [external shell-access guides](initial-shell.md) to get the root shell. Check their firmware requirements; a method for one build may not work on another. If the method uses a reverse connection, [prepare the host listener and firewall](initial-shell.md#prepare-the-listener-and-firewall) first so the camera can connect back to your computer.
 
 ## Use the right machine and address
 

@@ -15,6 +15,7 @@ docs/content/guide/_index.md
 docs/content/guide/downgrade.md
 docs/content/guide/getting-started.md
 docs/content/guide/initial-shell.md
+docs/content/guide/make-it-local.md
 docs/content/guide/permanent-telnet.md
 docs/content/guide/troubleshooting.md
 docs/content/guide/verify-streams.md

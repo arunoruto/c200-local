@@ -1,7 +1,7 @@
 +++
 title = 'Troubleshooting'
 description = 'Identify the failing stage without blindly repeating firmware writes, restarts or configuration saves.'
-weight = 50
+weight = 60
 +++
 
 Start with the step that failed. An open TCP port, an accepted upload or an RTSP OPTIONS response only confirms part of the process. Check the running firmware, login and actual video before calling it successful.

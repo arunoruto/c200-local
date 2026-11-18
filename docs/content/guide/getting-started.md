@@ -63,7 +63,8 @@ No public firmware or device dump is included in the repository. The reference d
 
 1. [Downgrade and verify the running version](downgrade.md).
 2. Get a root shell using the [external shell-access guides](initial-shell.md).
-3. [Stage, test and save permanent Telnet](permanent-telnet.md).
-4. [Verify both streams, ONVIF, local API, time and authentication](verify-streams.md).
+3. [Read how to make the camera local](make-it-local.md): the cloud-blocking policy, streaming exceptions and test limits.
+4. [Stage, test and save the policy with permanent Telnet](permanent-telnet.md).
+5. [Verify both streams, ONVIF, local API, time and authentication](verify-streams.md).
 
 If a check fails, use [troubleshooting](troubleshooting.md) before repeating any write or reboot.

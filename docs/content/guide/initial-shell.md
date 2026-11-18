@@ -119,4 +119,4 @@ For remote access through a subnet router, use a listener on the camera's LAN or
 
 ## Continue to permanent Telnet
 
-Once you have a root shell, follow the [permanent Telnet guide](permanent-telnet.md) to keep shell access after reboot without losing RTSP or ONVIF. The reverse-listener port is for initial access; it does not need to remain open after you have verified the permanent connection.
+Once you have a root shell, read [Make it local](make-it-local.md) for the cloud-blocking policy, then follow the [permanent Telnet guide](permanent-telnet.md) to install and save it with shell access after reboot. The reverse-listener port is for initial access; it does not need to remain open after you have verified the permanent connection.

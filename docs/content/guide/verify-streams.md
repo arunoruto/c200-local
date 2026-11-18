@@ -1,10 +1,10 @@
 +++
 title = 'Verify local services'
 description = 'Check both RTSP streams, ONVIF, the local API, the clock and the saved listener after reboot.'
-weight = 40
+weight = 50
 +++
 
-Use this checklist before changing the camera, during the RAM trial with the filter attached, and after the [persistence procedure](permanent-telnet.md). Check with **new connections** each time. All addresses below are examples. Use your actual fixed camera address.
+Use this checklist before changing the camera, during the RAM trial with the filter attached, and after the [persistence procedure](permanent-telnet.md). The installed scripts also apply the [local-operation firewall policy](make-it-local.md). Check with **new connections** each time. All addresses below are examples. Use your actual fixed camera address.
 
 ## Connection details
 

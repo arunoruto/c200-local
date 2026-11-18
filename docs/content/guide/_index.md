@@ -9,10 +9,11 @@ type = "docs"
 
 Start with [prerequisites and setup](getting-started.md), then follow the steps in order. The downgrade uses your owner/admin login. To set up permanent Telnet afterward, you need a root shell on the camera.
 
-{{< cards cols="3" >}}
+{{< cards cols="2" >}}
   {{< card link="downgrade" title="1. Downgrade" subtitle="Verify the stock 1.1.15 image, upload once, then check the running version." >}}
   {{< card link="initial-shell" title="2. Initial shell" subtitle="External references for initial access. Persistence begins once you have root." >}}
-  {{< card link="permanent-telnet" title="3. Permanent Telnet" subtitle="Back up, test, save the startup hook, then reboot and check every local service." >}}
+  {{< card link="make-it-local" title="3. Make it local" subtitle="Understand the cloud-blocking policy and the exceptions that keep local streaming working." >}}
+  {{< card link="permanent-telnet" title="4. Save local access" subtitle="Back up, test and save the policy with permanent Telnet, then check every local service after reboot." >}}
 {{< /cards >}}
 
 ## Before starting

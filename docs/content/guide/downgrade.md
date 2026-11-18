@@ -105,6 +105,6 @@ The compatibility comparison alone cannot confirm the downgrade. In this test, c
 
 ## 6. Continue to persistent Telnet
 
-[Get a root shell using the external guides](initial-shell.md), then follow [permanent Telnet with working RTSP and ONVIF](permanent-telnet.md).
+[Get a root shell using the external guides](initial-shell.md), read [Make it local](make-it-local.md) for the cloud-blocking setup, then follow [permanent Telnet with working RTSP and ONVIF](permanent-telnet.md) to install it.
 
 See the [test results](../reference/validation.md) and [technical explanation](../reference/how-it-works.md) for the original downgrade and its limits.

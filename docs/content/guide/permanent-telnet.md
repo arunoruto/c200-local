@@ -1,10 +1,10 @@
 +++
 title = "Permanent Telnet"
 description = "Save authenticated Telnet without losing RTSP or ONVIF."
-weight = 30
+weight = 40
 +++
 
-Start after the [stock downgrade](downgrade.md), with a [root shell open on the camera](initial-shell.md). These steps save the Telnet startup scripts in user configuration, using the method tested on **C200 V2 stock 1.1.15**. They keep your existing Linux password and `/bin/login`, and allow the local streaming and discovery traffic needed while the cloud is blocked.
+Start after the [stock downgrade](downgrade.md), with a [root shell open on the camera](initial-shell.md). These steps save the Telnet startup scripts in user configuration, using the method tested on **C200 V2 stock 1.1.15**. They keep your existing Linux password and `/bin/login`, and allow the local streaming and discovery traffic needed while the cloud is blocked. Read [Make it local](make-it-local.md) first for the firewall policy and its limits; this procedure installs and saves that policy together with Telnet.
 
 The `camera/` files match the tested startup scripts, with an example address in place of the camera's address. These instructions are for matching firmware. The published steps have not been repeated as a fresh camera installation. If you already have `TAPO_LOCAL_ONLY` installed or use different firmware, review your current setup before continuing.
 

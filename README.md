@@ -12,8 +12,9 @@ Start with [prerequisites and setup](docs/content/guide/getting-started.md).
 
 1. [Downgrade from 1.3.17 to 1.1.15](docs/content/guide/downgrade.md).
 2. [Get a root shell](docs/content/guide/initial-shell.md) using the external guide and author's blog post.
-3. [Make Telnet permanent](docs/content/guide/permanent-telnet.md).
-4. [Verify both streams, ONVIF and local access](docs/content/guide/verify-streams.md).
+3. [Make it local: block the cloud and keep streaming](docs/content/guide/make-it-local.md).
+4. [Install the saved policy and permanent Telnet](docs/content/guide/permanent-telnet.md).
+5. [Verify both streams, ONVIF and local access](docs/content/guide/verify-streams.md).
 
 For common failures, see [troubleshooting](docs/content/guide/troubleshooting.md).
 

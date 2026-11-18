@@ -51,7 +51,7 @@ body { font-feature-settings: "ss01", "cv11"; }
 .c200-section-label { padding-top: 1.9rem; border-top: 1px solid var(--c200-line); display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
 .c200-section-label h2 { font-size: 1.2rem; font-weight: 600; letter-spacing: -.025em; }
 .c200-section-label p { color: var(--c200-muted); font-size: .8rem; }
-.c200-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.15rem; margin: 1.5rem 0 3rem; }
+.c200-steps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.15rem; margin: 1.5rem 0 3rem; }
 .c200-step { display: flex; flex-direction: column; min-height: 14rem; border: 1px solid var(--c200-line); border-radius: .85rem; padding: 1.5rem; transition: border-color .16s, background .16s; }
 .c200-step:hover { border-color: #087f69; background: var(--c200-surface); }
 .c200-step-number { font: 500 .74rem ui-monospace, monospace; color: var(--c200-muted); }
